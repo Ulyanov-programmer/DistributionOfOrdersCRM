@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DoO_CRM.BL.Model
 {
-    class Sell
+    public class Sell
     {
         public int Id { get; set; }
 

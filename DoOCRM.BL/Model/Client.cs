@@ -3,8 +3,14 @@ using System.Collections.Generic;
 
 namespace DoO_CRM.BL
 {
-    class Client
+    public class Client
     {
+        public Client(string name, decimal balance)
+        {
+            Name = name;
+            Balance = balance;
+        }
+
         public int Id { get; set; }
         public string Name { get; set; }
         public decimal Balance { get; set; }

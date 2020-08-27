@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DoO_CRM.BL
 {
-    class Product
+    public class Product
     {
         public int Id { get; set; }
         public string Name { get; set; }

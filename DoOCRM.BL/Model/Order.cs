@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DoO_CRM.BL.Model
 {
-    class Order
+    public class Order
     {
         public long Id { get; set; }
         public Guid Number { get; set; }
