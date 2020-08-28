@@ -1,11 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DoO_CRM.BL.Model
 {
     public class Sell
     {
+        public Sell(int productId, Product product, Order order)
+        {
+            ProductId = productId;
+            Product = product ?? throw new ArgumentNullException(nameof(product));
+            Order = order ?? throw new ArgumentNullException(nameof(order));
+        }
+        public Sell() { }
         public int Id { get; set; }
 
         public int ProductId { get; set; }

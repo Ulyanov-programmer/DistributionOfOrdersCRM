@@ -10,6 +10,7 @@ namespace DoO_CRM.BL
             Name = name;
             Balance = balance;
         }
+        public Client() { }
 
         public int Id { get; set; }
         public string Name { get; set; }

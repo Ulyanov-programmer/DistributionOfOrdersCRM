@@ -35,16 +35,11 @@ namespace DoO_CRM.BL.Controller
                 Client clientFromDB = context.Clients.FirstOrDefault(clnt => clnt.Name == client.Name);
                 if (clientFromDB != default)
                 {
-                    clientFromDB.Balance += money;
                     context.SaveChanges();
                     return true;
                 }
             }
             return false;
-        }
-        public static bool SendOrder()
-        {
-            Order order = new Order()
         }
     }
 }

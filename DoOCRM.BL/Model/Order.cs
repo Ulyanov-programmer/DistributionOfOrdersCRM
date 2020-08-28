@@ -19,7 +19,7 @@ namespace DoO_CRM.BL.Model
 
         public override string ToString()
         {
-            return $"{Number}, дата покупки: {DateBuy:dd.MM.yyyy}";
+            return $"{Number}, дата создания: {DateBuy:dd.MM.yyyy hh.mm.ss}";
         }
         //TODO: Разделить на слои Логики и данных БД.
     }
