@@ -8,7 +8,7 @@ namespace DoO_CRM.ClientINTERFACE
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             DoO_CRMContext context = new DoO_CRMContext();
             Client client = null;

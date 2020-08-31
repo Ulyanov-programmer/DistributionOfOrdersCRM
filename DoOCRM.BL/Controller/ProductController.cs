@@ -30,9 +30,17 @@ namespace DoO_CRM.BL.Controller
 
                 foreach (var product in cart.Products)
                 {
-                    var countOfProd = cart.Products.Count(prod => prod.Name == product.Name);
+                    int count = cart.Products.Count(prod => prod.Equals(product));
+                    string stringWithData = $"{product.Name}, количество - {count} шт.";
 
-                    sortProducts.Add($"{product.Name}, количество - {countOfProd} шт.");
+                    if (sortProducts.Any(strig => strig.Equals(stringWithData)))
+                    {
+                        cart.Products.RemoveAll(strig => strig.Equals(stringWithData));
+                    }
+                    else
+                    {
+                        sortProducts.Add(stringWithData);
+                    }
                 }
                 if (toBeWrite)
                 {

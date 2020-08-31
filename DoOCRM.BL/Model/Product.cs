@@ -17,21 +17,22 @@ namespace DoO_CRM.BL
         public decimal Cost { get; set; }
         public int Count { get; set; }
 
+
         public override string ToString()
         {
             return Name;
-        }
-        public override int GetHashCode()
-        {
-            return Id;
         }
         public override bool Equals(object obj)
         {
             if (obj is Product product)
             {
-                return Id.Equals(product.Id);
+                return Name.Equals(product.Name);
             }
             return false;
+        }
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
     }
 }

@@ -3,6 +3,7 @@ using DoO_CRM.BL.Controller;
 using System;
 using System.Collections.Generic;
 using DoO_CRM.BL.Model;
+using System.Linq;
 
 namespace DoO_CRM.BL.Controller.Tests
 {
@@ -13,7 +14,6 @@ namespace DoO_CRM.BL.Controller.Tests
         public void ShowProductsTest()
         {
             //Arrange
-            var context = new DoO_CRMContext();
             var rnd = new Random();
             var products = new List<Product>();
 
@@ -29,19 +29,21 @@ namespace DoO_CRM.BL.Controller.Tests
                                             rnd.Next(0, 10000),
                                             rnd.Next(1, 50));
 
-            products.Add(product1);
-            products.Add(product1);
-            products.Add(product1);
-
-            products.Add(product2);
-            products.Add(product2);
-
+            for (int i = 0; i < 5; i++)
+            {
+                products.Add(product1);
+            }
+            for (int i = 0; i < 3; i++)
+            {
+                products.Add(product2);
+            }
             products.Add(product3);
+            
 
             List<string> expectedData = new List<string>()
             {
-                $"{product1.Name}, количество - 3 шт.",
-                $"{product2.Name}, количество - 2 шт.",
+                $"{product1.Name}, количество - 5 шт.",
+                $"{product2.Name}, количество - 3 шт.",
                 $"{product3.Name}, количество - 1 шт."
             };
 
@@ -52,7 +54,8 @@ namespace DoO_CRM.BL.Controller.Tests
             List<string> result = ProductController.ShowProducts(cart, false);
 
             //Assert
-            Assert.AreEqual(expectedData, result);
+            bool isEqual = expectedData.SequenceEqual(result);
+            Assert.IsTrue(isEqual);
         }
     }
 }
