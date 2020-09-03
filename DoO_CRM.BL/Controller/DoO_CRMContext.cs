@@ -8,7 +8,7 @@ namespace DoO_CRM.BL.Controller
     {
         public DoO_CRMContext()
         {
-            Database.EnsureCreated();
+            Database.Migrate();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -16,9 +16,9 @@ namespace DoO_CRM.BL.Controller
             optionsBuilder.UseSqlServer("Server=DESKTOP-N9EORNQ;Database=DoO_CRM;Trusted_Connection=True;");
         }
 
-        internal DbSet<Order> Orders { get; set; }
-        internal DbSet<Sell> Sells { get; set; }
-        internal DbSet<Client> Clients { get; set; }
-        internal DbSet<Product> Products { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<Sell> Sells { get; set; }
+        public DbSet<Client> Clients { get; set; }
+        public DbSet<Product> Products { get; set; }
     }
 }

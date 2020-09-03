@@ -4,16 +4,14 @@ using DoO_CRM.BL.Controller;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DoO_CRM.BL.Migrations
 {
     [DbContext(typeof(DoO_CRMContext))]
-    [Migration("20200826110623_Start")]
-    partial class Start
+    partial class DoO_CRMContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,20 +44,23 @@ namespace DoO_CRM.BL.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<byte>("CassId")
-                        .HasColumnType("tinyint");
-
                     b.Property<int?>("ClientId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DateBuy")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsBuy")
+                        .HasColumnType("bit");
+
                     b.Property<Guid>("Number")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("SumCost")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("TerminalId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -75,10 +76,10 @@ namespace DoO_CRM.BL.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("OrderId")
+                    b.Property<int>("CountOfProduct")
                         .HasColumnType("int");
 
-                    b.Property<long?>("OrderId1")
+                    b.Property<long?>("OrderId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("ProductId")
@@ -86,7 +87,7 @@ namespace DoO_CRM.BL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId1");
+                    b.HasIndex("OrderId");
 
                     b.HasIndex("ProductId");
 
@@ -125,7 +126,7 @@ namespace DoO_CRM.BL.Migrations
                 {
                     b.HasOne("DoO_CRM.BL.Model.Order", "Order")
                         .WithMany("Sells")
-                        .HasForeignKey("OrderId1");
+                        .HasForeignKey("OrderId");
 
                     b.HasOne("DoO_CRM.BL.Product", "Product")
                         .WithMany()

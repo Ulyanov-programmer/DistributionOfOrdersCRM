@@ -10,7 +10,7 @@ namespace DoO_CRM.ClientINTERFACE
     {
         static void Main()
         {
-            DoO_CRMContext context = new DoO_CRMContext();
+            var context = new DoO_CRMContext();
             Client client = null;
             Cart cart = new Cart(client);
 
@@ -84,15 +84,15 @@ namespace DoO_CRM.ClientINTERFACE
                         break;
 
                     case ConsoleKey.B:
-                        Console.Write("\nНазвание продукта, который собираетесь добавить: ");
-                        if (cart.AddProduct(Console.ReadLine(), productsFromDB))
-                        {
-                            Console.WriteLine("Добавление продукта произошло успешно!");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Во время выполнения операции произошла ошибка!");
-                        }
+                        Console.Write("\nНазвание продукта, который собираетесь добавить в корзину: ");
+                        //if (cart.AddProduct(Console.ReadLine(), productsFromDB))
+                        //{
+                        //    Console.WriteLine("Добавление продукта произошло успешно!");
+                        //}
+                        //else
+                        //{
+                        //    Console.WriteLine("Во время выполнения операции произошла ошибка!");
+                        //}
                         break;
 
                 }

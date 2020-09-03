@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DoO_CRM.BL.Migrations
 {
     [DbContext(typeof(DoO_CRMContext))]
-    [Migration("20200826112508_StartUpdate")]
-    partial class StartUpdate
+    [Migration("20200901113142_StartMigration")]
+    partial class StartMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -46,20 +46,23 @@ namespace DoO_CRM.BL.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<byte>("CassId")
-                        .HasColumnType("tinyint");
-
                     b.Property<int?>("ClientId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DateBuy")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsBuy")
+                        .HasColumnType("bit");
+
                     b.Property<Guid>("Number")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("SumCost")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("TerminalId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -74,6 +77,9 @@ namespace DoO_CRM.BL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("CountOfProduct")
+                        .HasColumnType("int");
 
                     b.Property<long?>("OrderId")
                         .HasColumnType("bigint");

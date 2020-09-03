@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DoO_CRM.BL.Migrations
 {
-    public partial class Start : Migration
+    public partial class StartMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -43,10 +43,11 @@ namespace DoO_CRM.BL.Migrations
                     Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Number = table.Column<Guid>(nullable: false),
-                    CassId = table.Column<byte>(nullable: false),
+                    TerminalId = table.Column<int>(nullable: false),
+                    DateBuy = table.Column<DateTime>(nullable: false),
                     SumCost = table.Column<decimal>(nullable: false),
-                    ClientId = table.Column<int>(nullable: true),
-                    DateBuy = table.Column<DateTime>(nullable: false)
+                    IsBuy = table.Column<bool>(nullable: false),
+                    ClientId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -65,16 +66,16 @@ namespace DoO_CRM.BL.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    CountOfProduct = table.Column<int>(nullable: false),
                     ProductId = table.Column<int>(nullable: false),
-                    OrderId = table.Column<int>(nullable: false),
-                    OrderId1 = table.Column<long>(nullable: true)
+                    OrderId = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Sells", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Sells_Orders_OrderId1",
-                        column: x => x.OrderId1,
+                        name: "FK_Sells_Orders_OrderId",
+                        column: x => x.OrderId,
                         principalTable: "Orders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -92,9 +93,9 @@ namespace DoO_CRM.BL.Migrations
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Sells_OrderId1",
+                name: "IX_Sells_OrderId",
                 table: "Sells",
-                column: "OrderId1");
+                column: "OrderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Sells_ProductId",

@@ -5,9 +5,9 @@ using System.Text;
 
 namespace DoO_CRM.INTERFACE
 {
-    class Program
+    public class Program
     {
-        static void Main()
+        private static void Main()
         {
             byte cassId = 0;
             Console.WriteLine("Добро пожаловать, сотрудник!");

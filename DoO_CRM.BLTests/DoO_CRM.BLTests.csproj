@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DoOCRM.BL\DoO_CRM.BL.csproj" />
+    <ProjectReference Include="..\DoO_CRM.BL\DoO_CRM.BL.csproj" />
   </ItemGroup>
 
 </Project>
