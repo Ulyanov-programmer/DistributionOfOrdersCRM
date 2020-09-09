@@ -3,6 +3,7 @@ using DoO_CRM.BL.Controller;
 using DoO_CRM.BL.Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DoO_CRM.ClientINTERFACE
 {
@@ -39,7 +40,7 @@ namespace DoO_CRM.ClientINTERFACE
 
                     Console.Write("\nВведите свой будущий никнейм: ");
                     string newNickname = Console.ReadLine();
-                    var newClientFromDB = ClientController.Registration(newNickname, context);
+                    var newClientFromDB = ClientController.Registration(newNickname, 0 , context);
 
                     if (newClientFromDB != null)
                     {
@@ -67,6 +68,7 @@ namespace DoO_CRM.ClientINTERFACE
             {
                 Console.WriteLine("Что бы пополнить баланс, нажмите U.");
                 Console.WriteLine("Что бы пополнить корзину, нажмите B.");
+                Console.WriteLine("Вы готовы отправить заказ? Нажмите O (англ).");
 
                 switch (Console.ReadKey().Key)
                 {
@@ -84,17 +86,30 @@ namespace DoO_CRM.ClientINTERFACE
                         break;
 
                     case ConsoleKey.B:
-                        Console.Write("\nНазвание продукта, который собираетесь добавить в корзину: ");
-                        //if (cart.AddProduct(Console.ReadLine(), productsFromDB))
-                        //{
-                        //    Console.WriteLine("Добавление продукта произошло успешно!");
-                        //}
-                        //else
-                        //{
-                        //    Console.WriteLine("Во время выполнения операции произошла ошибка!");
-                        //}
-                        break;
+                        Console.Write("\nНазвание продукта, который собираетесь добавить в корзину (регистр не учитывается): ");
+                        string name = Console.ReadLine().ToLower();
 
+                        var findedProduct = productsFromDB.FirstOrDefault(prod => prod.Name.ToLower() == name);
+
+                        if (cart.AddProduct(findedProduct, 1, context))
+                        {
+                            Console.WriteLine("Добавление продукта произошло успешно!");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Во время выполнения операции произошла ошибка!");
+                        }
+                        break;
+                    case ConsoleKey.O:
+                        if (ClientController.SendOrder(client, cart))
+                        {
+                            Console.WriteLine("Заказ успешно отправлен!");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Заказ не был отправлен!");
+                        }
+                        break;
                 }
             }
         }

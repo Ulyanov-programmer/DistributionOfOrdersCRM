@@ -24,20 +24,20 @@ namespace DoO_CRM.BLTests.Model
             var client = ClientController.Registration($"Пользователь {Guid.NewGuid()}", 50000, context);
 
             Terminal terminal = new Terminal
-            {
-                TerminalId = 1
-            };
+            { TerminalId = 1 };
 
+            /*
+                Перед выполнением нижестоящего метода, следует убедиться, что в БД в таблице Products есть элементы.
+            */
             Cart cart = new Cart(client, context.Products.First(), 3, context);
-            Order actualOrder = new Order(terminal.TerminalId, client, cart);
+            Order actualOrder = new Order(client, cart);
 
             Order expectedOrder = new Order(terminal.TerminalId,
                                             actualOrder.Number,
                                             DateTime.Now,
                                             ClientController.GetSumCostOfSells(cart),
                                             false,
-                                            client,
-                                            cart);
+                                            client);
 
             //Act
             if (terminal.Enqueue(actualOrder) == false)

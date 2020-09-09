@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DoO_CRM.BL.Migrations
 {
-    public partial class StartMigration : Migration
+    public partial class FirstMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -40,7 +40,7 @@ namespace DoO_CRM.BL.Migrations
                 name: "Orders",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false)
+                    OrderId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Number = table.Column<Guid>(nullable: false),
                     TerminalId = table.Column<int>(nullable: false),
@@ -51,7 +51,7 @@ namespace DoO_CRM.BL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Orders", x => x.Id);
+                    table.PrimaryKey("PK_Orders", x => x.OrderId);
                     table.ForeignKey(
                         name: "FK_Orders_Clients_ClientId",
                         column: x => x.ClientId,
@@ -64,20 +64,20 @@ namespace DoO_CRM.BL.Migrations
                 name: "Sells",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    SellId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CountOfProduct = table.Column<int>(nullable: false),
                     ProductId = table.Column<int>(nullable: false),
-                    OrderId = table.Column<long>(nullable: true)
+                    OrderId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Sells", x => x.Id);
+                    table.PrimaryKey("PK_Sells", x => x.SellId);
                     table.ForeignKey(
                         name: "FK_Sells_Orders_OrderId",
                         column: x => x.OrderId,
                         principalTable: "Orders",
-                        principalColumn: "Id",
+                        principalColumn: "OrderId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Sells_Products_ProductId",

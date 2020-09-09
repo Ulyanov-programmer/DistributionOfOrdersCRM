@@ -1,5 +1,7 @@
 ﻿using DoO_CRM.BL.Model;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DoO_CRM.BL
 {
@@ -16,7 +18,7 @@ namespace DoO_CRM.BL
         public string Name { get; set; }
         public decimal Balance { get; set; }
 
-        public ICollection<Order> Orders { get; set; }
+        public List<Order> Orders { get; set; }
 
         public override string ToString()
         {

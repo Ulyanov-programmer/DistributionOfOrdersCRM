@@ -39,9 +39,9 @@ namespace DoO_CRM.BL.Migrations
 
             modelBuilder.Entity("DoO_CRM.BL.Model.Order", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<int>("OrderId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int?>("ClientId")
@@ -62,7 +62,7 @@ namespace DoO_CRM.BL.Migrations
                     b.Property<int>("TerminalId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("OrderId");
 
                     b.HasIndex("ClientId");
 
@@ -71,7 +71,7 @@ namespace DoO_CRM.BL.Migrations
 
             modelBuilder.Entity("DoO_CRM.BL.Model.Sell", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("SellId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -79,13 +79,13 @@ namespace DoO_CRM.BL.Migrations
                     b.Property<int>("CountOfProduct")
                         .HasColumnType("int");
 
-                    b.Property<long?>("OrderId")
-                        .HasColumnType("bigint");
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("int");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("SellId");
 
                     b.HasIndex("OrderId");
 

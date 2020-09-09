@@ -1,25 +1,18 @@
 ﻿using DoO_CRM.BL.Controller;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
 namespace DoO_CRM.BL.Model
 {
     public class Order
     {
-        public Order(decimal sumCost, Client client, Cart cartWithSells)
+        public Order(Client client, Cart cartWithSells)
         {
             Number = Guid.NewGuid();
-            SumCost = ClientController.GetSumCostOfSells(cartWithSells); //TODO: не работает метод.
+            SumCost = ClientController.GetSumCostOfSells(cartWithSells);
             ClientId = client.Id;
-            Client = client;
-
-            Sells = new List<Sell>();
-            foreach (var sell in cartWithSells.Sells)
-            {
-                sell.Order = this;
-                Sells.Add(sell);
-            }
         }
 
         public Order(int cassId,
@@ -27,8 +20,7 @@ namespace DoO_CRM.BL.Model
                      DateTime dateBuy,
                      decimal sumCost,
                      bool tobeBuy,
-                     Client client,
-                     Cart cartWithSells)
+                     Client client)
         {
             Number = number;
             TerminalId = cassId;
@@ -36,19 +28,11 @@ namespace DoO_CRM.BL.Model
             SumCost = sumCost;
             IsBuy = tobeBuy;
             ClientId = client.Id;
-            Client = client;
-
-            Sells = new List<Sell>();
-            foreach (var sell in cartWithSells.Sells)
-            {
-                sell.Order = this;
-                Sells.Add(sell);
-            }
         }
         public Order() { }
 
 
-        public long Id { get; set; }
+        public int OrderId { get; set; }
         public Guid Number { get; set; }
         public int TerminalId { get; set; }
         
@@ -61,7 +45,7 @@ namespace DoO_CRM.BL.Model
 
         public int? ClientId { get; set; }
         public Client Client { get; set; }
-        public ICollection<Sell> Sells { get; set; }
+        public List<Sell> Sells { get; set; }
 
         #endregion
 
@@ -71,13 +55,10 @@ namespace DoO_CRM.BL.Model
         }
         public bool Equals(Order otherOrder)
         {
-            bool equal = true;
-            if (otherOrder.ClientId != ClientId ||
-                otherOrder.IsBuy != IsBuy ||
+            if (otherOrder.IsBuy != IsBuy ||
                 otherOrder.Number != Number ||
                 otherOrder.SumCost != SumCost ||
-                otherOrder.TerminalId != TerminalId ||
-                otherOrder.Sells.SequenceEqual(Sells) == false
+                otherOrder.TerminalId != TerminalId
                 )
             {
                 return false;

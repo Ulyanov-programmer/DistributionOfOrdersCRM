@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DoO_CRM.BL.Model
 {
@@ -11,14 +12,14 @@ namespace DoO_CRM.BL.Model
             CountOfProduct = countOfProduct;
         }
         public Sell() { }
-        public int Id { get; set; }
+        public int SellId { get; set; }
         public int CountOfProduct { get; set; }
 
         #region References
 
         public int ProductId { get; set; }
         public Product Product { get; set; }
-        public Order Order = new Order();
+        public Order Order { get; set; }
 
         #endregion
 

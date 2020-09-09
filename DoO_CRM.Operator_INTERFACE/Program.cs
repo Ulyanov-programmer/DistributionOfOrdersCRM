@@ -1,7 +1,10 @@
-﻿using System;
+﻿using DoO_CRM.BL.Controller;
+using DoO_CRM.BL.Model;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 
 namespace DoO_CRM.INTERFACE
 {
@@ -9,12 +12,17 @@ namespace DoO_CRM.INTERFACE
     {
         private static void Main()
         {
-            byte cassId = 0;
-            Console.WriteLine("Добро пожаловать, сотрудник!");
+            var context = new DoO_CRMContext();
+            var terminal = new Terminal
+            {
+                TerminalId = 1
+            };
+            IPAddress localAddr = IPAddress.Parse("127.0.0.1");
+            const int port = 8080;
+
             Console.WriteLine("Идёт создание точки подключения...");
 
-            IPAddress localAddr = IPAddress.Parse("127.0.0.1");
-            int port = 8080;
+            #region CreateServer
             TcpListener server = default;
 
             try
@@ -22,28 +30,44 @@ namespace DoO_CRM.INTERFACE
                 server = new TcpListener(localAddr, port);
                 server.Start();
             }
-            catch (Exception ex)
+            catch (SocketException ex)
             {
                 Console.WriteLine($"Не удалось создать точку подключения, данные об ошибке: {ex.Message}");
             }
             Console.WriteLine("Точка подключения создана и находится в состоянии работы!");
 
-            while (true)
+            #endregion
+
+            Console.WriteLine("Добро пожаловать, сотрудник!");
+
+            try
             {
-                Console.WriteLine("Ожидание подключения...");
+                while (true)
+                {
+                    var result = terminal.WaitingOfOrderAsync(server, terminal);
+                    if (result.Result >= 1)
+                    {
+                        Console.WriteLine($"На текущий момент в очереди {result.Result} заказов.");
+                        Console.WriteLine("\n Вы подтвердите первый заказ? Y - подтверждение, N - отказ.");
+                        var key = Console.ReadKey().Key;
 
-                TcpClient client = server.AcceptTcpClient();
-
-                Console.WriteLine("Подключен клиент. Выполнение запроса...");
-
-                NetworkStream stream = client.GetStream();
-
-                byte[] data = new byte[512];
-                int bytesOfData = stream.Read(data, 0, data.Length);
-                string orderData = Encoding.UTF8.GetString(data, 0, bytesOfData);
-
+                        if (key == ConsoleKey.Y)
+                        {
+                            terminal.Dequeue(true, terminal.TerminalId, context);
+                        }
+                        else if (key == ConsoleKey.N)
+                        {
+                            terminal.Dequeue(false, terminal.TerminalId, context);
+                        }
+                    }
+                    continue;
+                }
             }
-
+            catch (Exception ex)
+            {
+                Console.WriteLine("Произошла ошибка! \n" + ex.Message);
+                throw;
+            }
 
 
 

@@ -1,7 +1,9 @@
 ﻿using DoO_CRM.BL.Model;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
+using System.Text;
+using System.Text.Json;
 
 namespace DoO_CRM.BL.Controller
 {
@@ -47,10 +49,64 @@ namespace DoO_CRM.BL.Controller
             }
             return false;
         }
+        public static bool SendOrder(Client client, Cart cart) //TODO: Можно переделать на возврат сообщения о результате.
+        {
+            var tcpClient = new TcpClient();
+
+            try
+            {
+                tcpClient.Connect("127.0.0.1", 8080);
+                using (var stream = tcpClient.GetStream())
+                {
+                    Order order = new Order(client, cart);
+
+                    #region OptionWriter
+
+                    //BinaryWriter writer = new BinaryWriter(stream);
+
+                    //writer.Write(order.ClientId);
+                    //writer.Write(order.Client.Id);
+                    //writer.Write(order.Client.Name);
+                    //writer.Write(order.Client.Balance);
+                    //writer.Write(order.SumCost);
+                    //foreach (var sell in cart.Sells)
+                    //{
+                    //    writer.Write(sell.ProductId);
+                    //    writer.Write(sell.CountOfProduct);
+                    //    writer.Write(sell.Product.Name);
+                    //    writer.Write(sell.Product.Cost);
+                    //    writer.Write(sell.Product.Count);
+                    //}
+                    //writer.Flush();
+
+                    //Maybe it won't work.
+                    #endregion
+
+                    var options = new JsonSerializerOptions
+                    {
+                        WriteIndented = true
+                    };
+                    byte[] jsonUtf8Bytes = JsonSerializer.SerializeToUtf8Bytes(order, options);
+                    stream.Write(jsonUtf8Bytes, 0, jsonUtf8Bytes.Length);
+                }
+                return true;
+            }
+            catch (ObjectDisposedException ex)
+            {
+                Console.WriteLine("Произошла ошибка при подключении к удалённому серверу: " + ex.Message);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+        }
+
 
         public static decimal GetSumCostOfSells(Cart cart)
         {
-            return cart.Sells.Sum(prod => prod.Product.Cost);
+            return cart.Sells.Sum(prod => prod.Product.Cost); //TODO: Не работает.
         }
     }
 }
