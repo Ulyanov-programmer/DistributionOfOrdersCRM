@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace DoO_CRM.BL.Model
@@ -33,82 +31,88 @@ namespace DoO_CRM.BL.Model
         {
             if (QueueOrders.Count > 0)
             {
-                try
+                using (var transaction = context.Database.BeginTransaction())
                 {
-                    Order newOrder = QueueOrders.Peek(); //TODO: разбить на транзакции.
-                    int? identityOfClient = newOrder.ClientId;
-                    newOrder.ClientId = null;
-
-                    context.Orders.Add(newOrder);
-                    context.SaveChanges();
-
-                    newOrder.ClientId = identityOfClient;
-                    context.SaveChanges();
-
-                    newOrder.DateBuy = DateTime.Now;
-                    newOrder.IsBuy = confirmed;
-                    newOrder.TerminalId = terminalId;
-                    context.SaveChanges();
-
-
-                    Client clientFromDB = context.Clients.Find(newOrder.ClientId);
-                    clientFromDB.Balance -= newOrder.SumCost;
-                    context.SaveChanges();
-
-                    QueueOrders.Dequeue();
-
-                    if (context.Orders.OrderByDescending(order => order.OrderId)
-                                      .FirstOrDefault() != default)
+                    try
                     {
-                        return "Заказ был успешно сохранён.";
-                    }
-                    else
-                    {
-                        return "Заказ не был сохранён! Обратитесь за помощью к ближайшему айтишнику, или пните это устройство!";
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Произошла ошибка: {ex.Message}");
+                        Order newOrder = QueueOrders.Peek();
+                        int? identityOfClient = newOrder.ClientId;
+                        newOrder.ClientId = null;
 
-                    QueueOrders.Dequeue();
-                    Console.WriteLine("Заказ был удалён из очереди.");
+                        context.Orders.Add(newOrder);
+                        context.SaveChanges();
+
+                        newOrder.ClientId = identityOfClient;
+                        context.SaveChanges();
+
+                        newOrder.DateBuy = DateTime.Now;
+                        newOrder.IsBuy = confirmed;
+                        newOrder.TerminalId = terminalId;
+                        context.SaveChanges();
+
+
+                        Client clientFromDB = context.Clients.Find(newOrder.ClientId);
+                        clientFromDB.Balance -= newOrder.SumCost;
+                        context.SaveChanges();
+
+                        transaction.Commit();
+
+                        QueueOrders.Dequeue();
+                        ActualLenghtOfQueue--;
+
+                        if (context.Orders.Any(order => order.Number == newOrder.Number))
+                        {
+                            return "Заказ был успешно сохранён.";
+                        }
+                        else
+                        {
+                            return "Заказ не был сохранён! Обратитесь за помощью к ближайшему айтишнику, или пните это устройство!";
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Произошла ошибка: {ex.Message}");
+
+                        QueueOrders.Dequeue();
+                        transaction.Rollback();
+
+                        Console.WriteLine("Заказ был удалён из очереди, изменения не были сохранены.");
+                    }
                 }
             }
             return "На данный момент заказов нет в очереди!";
         }
 
-        private int WaitingOfOrder(TcpListener server, Terminal terminal)
+        private void WaitingOfOrder(TcpListener server, Terminal terminal)
         {
             while (true)
             {
-                Console.WriteLine("Ожидание заказа...");
                 var tcpClient = server.AcceptTcpClient();
 
                 Console.WriteLine("Чтение запроса...");
-                var stream = tcpClient.GetStream();
-
-                byte[] data = new byte[512];
-                int bytesOfData = stream.Read(data, 0, data.Length);
-                StringBuilder orderData = new StringBuilder();
-                do
+                using (var stream = tcpClient.GetStream())
                 {
-                    orderData.Append(Encoding.UTF8.GetString(data, 0, bytesOfData));
+                    // Receiving an Order
+                    Order sendedOrder = ProductController.ReceivingAnOrder(stream);
+                    Console.WriteLine("Чтение завершено.");
+
+                    // Saving the order and sending the answer
+                    bool orderIsntInTheQueue = terminal.QueueOrders.All(order => order.ClientId != sendedOrder.ClientId);
+
+                    if (orderIsntInTheQueue)
+                    {
+                        QueueOrders.Enqueue(sendedOrder);
+                        ActualLenghtOfQueue++;
+                    }
+
+                    ProductController.SendAnswer(stream, orderIsntInTheQueue);
                 }
-                while (stream.DataAvailable);
-
-                Order sendedOrder = JsonSerializer.Deserialize<Order>(orderData.ToString());
-                terminal.Enqueue(sendedOrder);
-
-                Console.WriteLine($"Чтение завершено.");
-                return ActualLenghtOfQueue;
             }
         }
 
-        public async Task<int> WaitingOfOrderAsync(TcpListener server, Terminal terminal)
+        public async Task WaitingOfOrderAsync(TcpListener server, Terminal terminal)
         {
-            var result = await Task.Run(() => WaitingOfOrder(server, terminal));
-            return result;
+            await Task.Run(() => WaitingOfOrder(server, terminal));
         }
     }
 }

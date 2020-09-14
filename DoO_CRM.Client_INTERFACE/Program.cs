@@ -103,11 +103,11 @@ namespace DoO_CRM.ClientINTERFACE
                     case ConsoleKey.O:
                         if (ClientController.SendOrder(client, cart))
                         {
-                            Console.WriteLine("Заказ успешно отправлен!");
+                            Console.WriteLine("Заказ успешно сохранён!");
                         }
                         else
                         {
-                            Console.WriteLine("Заказ не был отправлен!");
+                            Console.WriteLine("Заказ не был сохранён! Обратите внимание, скорее всего, ваш заказ выполняется.");
                         }
                         break;
                 }

@@ -42,7 +42,7 @@ namespace DoO_CRM.BLTests.Model
             //Act
             if (terminal.Enqueue(actualOrder) == false)
             {
-                Assert.Fail();
+                Assert.Fail("Заказ не был добавлен в очередь!");
             }
 
             var savedOrder = terminal.Dequeue(false, terminal.TerminalId, context);

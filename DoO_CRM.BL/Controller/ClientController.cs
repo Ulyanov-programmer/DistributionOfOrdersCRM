@@ -1,6 +1,7 @@
 ﻿using DoO_CRM.BL.Model;
 using System;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
@@ -52,14 +53,19 @@ namespace DoO_CRM.BL.Controller
         public static bool SendOrder(Client client, Cart cart) //TODO: Можно переделать на возврат сообщения о результате.
         {
             var tcpClient = new TcpClient();
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+            bool answer = false;
 
             try
             {
-                tcpClient.Connect("127.0.0.1", 8080);
+                tcpClient.Connect(IpAddress, Port);
                 using (var stream = tcpClient.GetStream())
                 {
+                    // Sending of Order
                     Order order = new Order(client, cart);
-
                     #region OptionWriter
 
                     //BinaryWriter writer = new BinaryWriter(stream);
@@ -82,14 +88,27 @@ namespace DoO_CRM.BL.Controller
                     //Maybe it won't work.
                     #endregion
 
-                    var options = new JsonSerializerOptions
-                    {
-                        WriteIndented = true
-                    };
                     byte[] jsonUtf8Bytes = JsonSerializer.SerializeToUtf8Bytes(order, options);
                     stream.Write(jsonUtf8Bytes, 0, jsonUtf8Bytes.Length);
+
+
+                    // Waiting an Answer
+                    byte[] data = new byte[256];
+                    var buildingAnswer = new StringBuilder();
+
+                    do
+                    {
+                        int bytesOfData = stream.Read(data, 0, data.Length);
+                        buildingAnswer.Append(Encoding.UTF8.GetString(data, 0, bytesOfData));
+                    }
+                    while (stream.DataAvailable);
+
+                    answer = JsonSerializer.Deserialize<bool>(buildingAnswer.ToString());
                 }
-                return true;
+            }
+            catch (SocketException ex)
+            {
+                Console.WriteLine("Произошла ошибка при работе с сокетом: " +ex.Message);
             }
             catch (ObjectDisposedException ex)
             {
@@ -101,6 +120,12 @@ namespace DoO_CRM.BL.Controller
                 Console.WriteLine(ex.Message);
                 return false;
             }
+            finally
+            {
+                tcpClient.Close();
+            }
+
+            return answer;
         }
 
 
@@ -108,5 +133,8 @@ namespace DoO_CRM.BL.Controller
         {
             return cart.Sells.Sum(prod => prod.Product.Cost); //TODO: Не работает.
         }
+
+        public const string IpAddress = "127.0.0.1";
+        public const int Port = 8080;
     }
 }

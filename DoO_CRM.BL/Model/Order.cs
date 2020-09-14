@@ -1,8 +1,6 @@
 ﻿using DoO_CRM.BL.Controller;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
 
 namespace DoO_CRM.BL.Model
 {
