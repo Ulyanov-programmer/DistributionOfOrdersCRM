@@ -31,56 +31,73 @@ namespace DoO_CRM.BL.Model
         {
             if (QueueOrders.Count > 0)
             {
-                using (var transaction = context.Database.BeginTransaction())
+                using var transaction = context.Database.BeginTransaction();
+                try
                 {
-                    try
+                    Order newOrder = QueueOrders.Peek();
+                    int? identityOfClient = newOrder.ClientId;
+                    newOrder.ClientId = null;
+
+                    context.Orders.Add(newOrder);
+                    context.SaveChanges();
+
+                    newOrder.ClientId = identityOfClient;
+                    context.SaveChanges();
+
+                    newOrder.DateBuy = DateTime.Now;
+                    newOrder.IsBuy = confirmed;
+                    newOrder.TerminalId = terminalId;
+                    context.SaveChanges();
+
+
+                    Client clientFromDB = context.Clients.Find(newOrder.ClientId);
+                    clientFromDB.Balance -= newOrder.SumCost;
+                    context.SaveChanges();
+
+                    clientFromDB.Orders.Add(newOrder);
+                    context.SaveChanges();
+
+                    transaction.Commit();
+
+                    QueueOrders.Dequeue();
+                    ActualLenghtOfQueue--;
+
+                    if (context.Orders.Any(order => order.Number == newOrder.Number))
                     {
-                        Order newOrder = QueueOrders.Peek();
-                        int? identityOfClient = newOrder.ClientId;
-                        newOrder.ClientId = null;
+                        SetValuesOrderInSells(clientFromDB.Id, newOrder, context);
 
-                        context.Orders.Add(newOrder);
-                        context.SaveChanges();
-
-                        newOrder.ClientId = identityOfClient;
-                        context.SaveChanges();
-
-                        newOrder.DateBuy = DateTime.Now;
-                        newOrder.IsBuy = confirmed;
-                        newOrder.TerminalId = terminalId;
-                        context.SaveChanges();
-
-
-                        Client clientFromDB = context.Clients.Find(newOrder.ClientId);
-                        clientFromDB.Balance -= newOrder.SumCost;
-                        context.SaveChanges();
-
-                        transaction.Commit();
-
-                        QueueOrders.Dequeue();
-                        ActualLenghtOfQueue--;
-
-                        if (context.Orders.Any(order => order.Number == newOrder.Number))
-                        {
-                            return "Заказ был успешно сохранён.";
-                        }
-                        else
-                        {
-                            return "Заказ не был сохранён! Обратитесь за помощью к ближайшему айтишнику, или пните это устройство!";
-                        }
+                        return "Заказ был успешно сохранён.";
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        Console.WriteLine($"Произошла ошибка: {ex.Message}");
-
-                        QueueOrders.Dequeue();
-                        transaction.Rollback();
-
-                        Console.WriteLine("Заказ был удалён из очереди, изменения не были сохранены.");
+                        return "Заказ не был сохранён! Обратитесь за помощью к ближайшему айтишнику, или пните это устройство!";
                     }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Произошла ошибка: {ex.Message}");
+
+                    QueueOrders.Dequeue();
+                    transaction.Rollback();
+
+                    Console.WriteLine("Заказ был удалён из очереди, изменения не были сохранены.");
                 }
             }
             return "На данный момент заказов нет в очереди!";
+        }
+
+        private bool SetValuesOrderInSells(int clientId, Order order, DoO_CRMContext context)
+        {
+            List<Sell> sells = context.Sells.Where(sell => sell.ClientId == clientId
+                                                                         && sell.Order != null)
+                                            .ToList();
+
+            foreach (var sell in sells)
+            {
+                sell.Order = order;
+            }
+            context.SaveChanges();
+            return true;
         }
 
         private void WaitingOfOrder(TcpListener server, Terminal terminal)
@@ -90,23 +107,22 @@ namespace DoO_CRM.BL.Model
                 var tcpClient = server.AcceptTcpClient();
 
                 Console.WriteLine("Чтение запроса...");
-                using (var stream = tcpClient.GetStream())
+                using var stream = tcpClient.GetStream();
+
+                // Receiving an Order
+                Order sendedOrder = ProductController.ReceivingAnOrder(stream);
+                Console.WriteLine("Чтение завершено.");
+
+                // Saving the order and sending the answer
+                bool orderIsntInTheQueue = terminal.QueueOrders.All(order => order.ClientId != sendedOrder.ClientId);
+
+                if (orderIsntInTheQueue)
                 {
-                    // Receiving an Order
-                    Order sendedOrder = ProductController.ReceivingAnOrder(stream);
-                    Console.WriteLine("Чтение завершено.");
-
-                    // Saving the order and sending the answer
-                    bool orderIsntInTheQueue = terminal.QueueOrders.All(order => order.ClientId != sendedOrder.ClientId);
-
-                    if (orderIsntInTheQueue)
-                    {
-                        QueueOrders.Enqueue(sendedOrder);
-                        ActualLenghtOfQueue++;
-                    }
-
-                    ProductController.SendAnswer(stream, orderIsntInTheQueue);
+                    QueueOrders.Enqueue(sendedOrder);
+                    ActualLenghtOfQueue++;
                 }
+
+                ProductController.SendAnswer(stream, orderIsntInTheQueue);
             }
         }
 

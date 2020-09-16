@@ -1,7 +1,5 @@
 ﻿using DoO_CRM.BL.Model;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DoO_CRM.BL
 {

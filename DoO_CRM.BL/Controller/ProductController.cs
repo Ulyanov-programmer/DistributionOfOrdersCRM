@@ -49,10 +49,9 @@ namespace DoO_CRM.BL.Controller
             byte[] jsonUtf8Bytes = JsonSerializer.SerializeToUtf8Bytes(isOrderInAnQueue, options);
 
             stream.Write(jsonUtf8Bytes, 0, jsonUtf8Bytes.Length);
-
-
             return true;
         }
+
         //public static List<string> ShowProductsOfCart(Cart cart, bool toBeWrite)
         //{
         //    if (cart != null && cart.Sells != null)

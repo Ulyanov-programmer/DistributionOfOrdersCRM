@@ -4,6 +4,7 @@ using DoO_CRM.BL.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace DoO_CRM.ClientINTERFACE
 {
@@ -16,9 +17,9 @@ namespace DoO_CRM.ClientINTERFACE
             Cart cart = new Cart(client);
 
             Console.WriteLine("Добро пожаловать, клиент! \n");
-            Console.WriteLine("Если вы зарегистрированы, нажмите клавишу A.");
-            Console.WriteLine("Если вы не желаете продолжить без регистрации или авторизации, нажмите любую другую кнопку.");
-            Console.WriteLine("Если вы желаете зарегистрироваться, нажмите клавишу R.");
+            Console.WriteLine("Зарегистрированы? Нажмите клавишу - A.");
+            Console.WriteLine("Желаете зарегистрироваться? Нажмите клавишу - R.");
+            Console.WriteLine("Желаете продолжить без регистрации или авторизации, нажмите любую другую кнопку.");
 
             switch (Console.ReadKey().Key)
             {
@@ -44,13 +45,14 @@ namespace DoO_CRM.ClientINTERFACE
 
                     if (newClientFromDB != null)
                     {
-                        Console.WriteLine($"Вы зарегистрированы, {newNickname}!");
+                        Console.WriteLine($"Теперь вы зарегистрированы, {newNickname}!");
                         client = newClientFromDB;
                         cart.Client = client;
                     }
                     break;
             }
 
+            Thread.Sleep(6000);
             Console.Clear();
 
             List<Product> productsFromDB = ProductController.GetTop100Products(false, context);
@@ -91,7 +93,7 @@ namespace DoO_CRM.ClientINTERFACE
 
                         var findedProduct = productsFromDB.FirstOrDefault(prod => prod.Name.ToLower() == name);
 
-                        if (cart.AddProduct(findedProduct, 1, context))
+                        if (cart.AddProduct(findedProduct.Id, client.Id, 1, context))
                         {
                             Console.WriteLine("Добавление продукта произошло успешно!");
                         }
@@ -103,7 +105,10 @@ namespace DoO_CRM.ClientINTERFACE
                     case ConsoleKey.O:
                         if (ClientController.SendOrder(client, cart))
                         {
-                            Console.WriteLine("Заказ успешно сохранён!");
+                            if (ClientController.ApplySells(cart, context))
+                            {
+                                Console.WriteLine("Заказ успешно сохранён в очереди, ожидайте подтверждения.");
+                            }
                         }
                         else
                         {

@@ -10,7 +10,7 @@ namespace DoO_CRM.BL.Model
         public Cart(Client client, Product product, int countOfProduct, DoO_CRMContext context)
         {
             Client = client;
-            AddProduct(product, countOfProduct, context);
+            AddProduct(product.Id, countOfProduct, client.Id, context);
         }
         public Cart(Client client)
         {
@@ -20,12 +20,12 @@ namespace DoO_CRM.BL.Model
         public Client Client { get; set; }
         public List<Sell> Sells = new List<Sell>();
 
-        public bool AddProduct(Product product, int countOfProducts, DoO_CRMContext context)
+        public bool AddProduct(int productId, int countOfProducts, int clientId, DoO_CRMContext context)
         {
-            var productFromDB = context.Products.FirstOrDefault(prod => prod.Name == product.Name);
+            var productFromDB = context.Products.FirstOrDefault(prod => prod.Id == productId);
             if (productFromDB != default)
             {
-                Sell newSell = new Sell(product, null, countOfProducts);
+                Sell newSell = new Sell(productFromDB,productId, countOfProducts, clientId);
 
                 Sells.Add(newSell);
                 return true;

@@ -33,7 +33,7 @@ namespace DoO_CRM.BL.Model
         public int OrderId { get; set; }
         public Guid Number { get; set; }
         public int TerminalId { get; set; }
-        
+
 
         public DateTime DateBuy { get; set; }
         public decimal SumCost { get; set; }
@@ -47,6 +47,7 @@ namespace DoO_CRM.BL.Model
 
         #endregion
 
+        #region overrides
         public override string ToString()
         {
             return $"Заказ {Number}, дата подтверждения: {DateBuy:dd.MM.yyyy hh.mm.ss}";
@@ -56,13 +57,16 @@ namespace DoO_CRM.BL.Model
             if (otherOrder.IsBuy != IsBuy ||
                 otherOrder.Number != Number ||
                 otherOrder.SumCost != SumCost ||
-                otherOrder.TerminalId != TerminalId
-                )
+                otherOrder.TerminalId != TerminalId)
             {
                 return false;
             }
             return true;
         }
+
+        #endregion
+
+
         //TODO: Разделить на слои Логики и данных БД.
     }
 }
