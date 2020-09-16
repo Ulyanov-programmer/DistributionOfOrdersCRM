@@ -54,14 +54,14 @@ namespace DoO_CRM.BL.Model
         }
         public bool Equals(Order otherOrder)
         {
-            if (otherOrder.IsBuy != IsBuy ||
-                otherOrder.Number != Number ||
-                otherOrder.SumCost != SumCost ||
-                otherOrder.TerminalId != TerminalId)
+            if (otherOrder.IsBuy == IsBuy ||
+                otherOrder.Number == Number ||
+                otherOrder.SumCost == SumCost ||
+                otherOrder.TerminalId == TerminalId)
             {
-                return false;
+                return true;
             }
-            return true;
+            return false;
         }
 
         #endregion

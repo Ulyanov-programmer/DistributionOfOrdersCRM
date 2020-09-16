@@ -33,6 +33,16 @@ namespace DoO_CRM.BL.Model
         {
             return @$"Продукт ""{Product.Name}"", количество - {CountOfProduct} шт.";
         }
+
+        public bool Equals(Sell otherSell)
+        {
+            if (ClientId == otherSell.ClientId &&
+                ProductId == otherSell.ProductId)
+            {
+                return true;
+            }
+            return false;
+        }
         #endregion
     }
 }

@@ -1,6 +1,7 @@
 ﻿using DoO_CRM.BL.Model;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -128,8 +129,9 @@ namespace DoO_CRM.BL.Controller
             return answer;
         }
 
-        public static bool ApplySells(Cart cart, DoO_CRMContext context)
+        public static List<Sell> ApplySells(Cart cart, DoO_CRMContext context)
         {
+            List<Sell> savedSells = new List<Sell>();
             try
             {
                 foreach (var sell in cart.Sells)
@@ -149,16 +151,18 @@ namespace DoO_CRM.BL.Controller
 
                     sell.ProductId = savedProductId;
                     context.SaveChanges();
+
+                    savedSells.Add(sell);
                 }
 
                 cart.Sells.Clear();
-                return true;
+                return savedSells;
             }
             catch (DbUpdateException ex)
             {
                 Console.WriteLine("Произошла ошибка при сохранении данных о покупке, с.м ошибку:");
                 Console.WriteLine(ex.Message);
-                return false;
+                return null;
             }
         }
 

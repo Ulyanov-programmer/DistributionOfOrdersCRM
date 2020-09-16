@@ -105,7 +105,7 @@ namespace DoO_CRM.ClientINTERFACE
                     case ConsoleKey.O:
                         if (ClientController.SendOrder(client, cart))
                         {
-                            if (ClientController.ApplySells(cart, context))
+                            if (ClientController.ApplySells(cart, context) != null)
                             {
                                 Console.WriteLine("Заказ успешно сохранён в очереди, ожидайте подтверждения.");
                             }

@@ -25,7 +25,7 @@ namespace DoO_CRM.BL.Model
             var productFromDB = context.Products.FirstOrDefault(prod => prod.Id == productId);
             if (productFromDB != default)
             {
-                Sell newSell = new Sell(productFromDB,productId, countOfProducts, clientId);
+                Sell newSell = new Sell(productFromDB, productId, countOfProducts, clientId);
 
                 Sells.Add(newSell);
                 return true;
