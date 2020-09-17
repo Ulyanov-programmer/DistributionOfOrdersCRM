@@ -11,18 +11,17 @@ namespace DoO_CRM.INTERFACE
     {
         private static void Main()
         {
+            #region PreliminaryData
+
             var context = new DoO_CRMContext();
+            var terminal = new Terminal(1);
+            var localAddr = IPAddress.Parse(ClientController.IpAddress);
 
-            var terminal = new Terminal
-            {
-                TerminalId = 1
-            };
-
-            IPAddress localAddr = IPAddress.Parse(ClientController.IpAddress);
+            #endregion
 
             Console.WriteLine("Идёт создание точки подключения...");
 
-            #region CreateServer
+            #region CreatingServer
 
             TcpListener server = default;
 
@@ -46,22 +45,31 @@ namespace DoO_CRM.INTERFACE
             {
                 while (true)
                 {
-                   _ = terminal.WaitingOfOrderAsync(server, terminal);
+                    _ = terminal.WaitingOfOrderAsync(server, terminal);
                     if (terminal.ActualLenghtOfQueue > 0)
                     {
                         Console.WriteLine($"На текущий момент в очереди {terminal.ActualLenghtOfQueue} заказов.");
+
                         Console.WriteLine("\n Вы подтвердите первый заказ? Y - подтверждение, N - отказ.");
-                        var key = Console.ReadKey().Key;
                         string outputMessage = "";
 
-                        if (key == ConsoleKey.Y)
+                        switch (Console.ReadKey().Key)
                         {
-                            outputMessage = terminal.Dequeue(true, terminal.TerminalId, context);
+                            #region I do (key Y)
+                            case ConsoleKey.Y:
+                                outputMessage = terminal.Dequeue(true, terminal.TerminalId, context);
+
+                                break;
+                            #endregion
+
+                            #region I don't (key N)
+                            case ConsoleKey.N:
+                                outputMessage = terminal.Dequeue(false, terminal.TerminalId, context);
+
+                                break;
+                            #endregion
                         }
-                        else if (key == ConsoleKey.N)
-                        {
-                            outputMessage = terminal.Dequeue(false, terminal.TerminalId, context);
-                        }
+
                         Console.WriteLine(outputMessage);
                         Console.WriteLine("Ожидание следующего заказа.\n");
                     }

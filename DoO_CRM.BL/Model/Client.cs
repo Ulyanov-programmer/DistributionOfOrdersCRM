@@ -5,10 +5,10 @@ namespace DoO_CRM.BL
 {
     public class Client
     {
-        public Client(string name, decimal balance)
+        public Client(string name, decimal optionalBalance = 0)
         {
             Name = name;
-            Balance = balance;
+            Balance = optionalBalance;
         }
         public Client() { }
 
@@ -18,9 +18,23 @@ namespace DoO_CRM.BL
 
         public List<Order> Orders { get; set; }
 
+        #region overrides
+
         public override string ToString()
         {
-            return Name; 
+            return Name;
         }
+
+        public bool Equals(Client otherClient)
+        {
+            if (Name == otherClient.Name &&
+                Balance == otherClient.Balance)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        #endregion
     }
 }

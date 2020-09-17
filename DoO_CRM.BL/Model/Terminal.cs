@@ -9,6 +9,11 @@ namespace DoO_CRM.BL.Model
 {
     public class Terminal
     {
+        public Terminal(int terminalId)
+        {
+            TerminalId = terminalId;
+        }
+
         public int TerminalId { get; set; }
         public Queue<Order> QueueOrders = new Queue<Order>();
 

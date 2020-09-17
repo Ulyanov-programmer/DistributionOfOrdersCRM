@@ -22,9 +22,9 @@ namespace DoO_CRM.BL.Controller
             }
             return null;
         }
-        public static Client Registration(string nameOfClient, decimal balanceOfClient, DoO_CRMContext context)
+        public static Client Registration(string nameOfClient, DoO_CRMContext context, decimal optionalBalanceOfClient = 0)
         {
-            Client newClient = new Client(nameOfClient, balanceOfClient);
+            Client newClient = new Client(nameOfClient, optionalBalanceOfClient);
 
             if (context.Clients.FirstOrDefault(clnt => clnt.Name == newClient.Name) == default)
             {
@@ -32,12 +32,22 @@ namespace DoO_CRM.BL.Controller
                 context.SaveChanges();
                 return newClient;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
-        public static bool UpBalance(Client client, decimal money, DoO_CRMContext context)
+
+        public static Client Registration(Client newClient, DoO_CRMContext context)
+        {
+            if (context.Clients.FirstOrDefault(clnt => clnt.Name == newClient.Name) == default)
+            {
+                context.Clients.Add(newClient);
+                context.SaveChanges();
+
+                return newClient;
+            }
+            return null;
+        }
+
+        public static decimal UpBalance(Client client, decimal money, DoO_CRMContext context)
         {
             if (money > 0)
             {
@@ -47,10 +57,11 @@ namespace DoO_CRM.BL.Controller
                 {
                     clientFromDB.Balance += money;
                     context.SaveChanges();
-                    return true;
+
+                    return clientFromDB.Balance;
                 }
             }
-            return false;
+            return -1;
         }
         public static bool SendOrder(Client client, Cart cart) 
         {
@@ -107,13 +118,9 @@ namespace DoO_CRM.BL.Controller
 
                 answer = JsonSerializer.Deserialize<bool>(buildingAnswer.ToString());
             }
-            catch (SocketException ex)
+            catch (SocketException)
             {
-                Console.WriteLine("Произошла ошибка при работе с сокетом: " +ex.Message);
-            }
-            catch (ObjectDisposedException ex)
-            {
-                Console.WriteLine("Произошла ошибка при подключении к удалённому серверу: " + ex.Message);
+                Console.WriteLine("Произошла ошибка при работе с сервером, сервер не доступен!");
                 return false;
             }
             catch (Exception ex)

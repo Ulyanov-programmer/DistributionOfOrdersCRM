@@ -10,19 +10,22 @@ namespace DoO_CRM.BL.Controller
 {
     public static class ProductController
     {
-        public static List<Product> GetTop100Products(bool ascOrDesc, DoO_CRMContext context)
+        public static List<Product> GetTop10Products(bool ascOrDesc, DoO_CRMContext context)
         {
-            var productsFromDB = new List<Product>();
-
-            productsFromDB.AddRange(context.Products
-                          .Where(prod => prod.Id < 101));
-
-            if (ascOrDesc == true) //А почему бы и не добавить эту фичу?
+            if (context.Products.Count() > 0)
             {
-                productsFromDB.OrderByDescending(prod => prod.Id);
-            }
+                var productsFromDB = new List<Product>();
 
-            return productsFromDB;
+                productsFromDB.AddRange(context.Products
+                              .Where(prod => prod.Id < 11));
+
+                if (ascOrDesc == true) //А почему бы и не добавить эту фичу?
+                {
+                    productsFromDB.OrderByDescending(prod => prod.Id);
+                }
+                return productsFromDB;
+            }
+            return null;
         }
 
         public static Order ReceivingAnOrder(NetworkStream stream)
@@ -52,36 +55,31 @@ namespace DoO_CRM.BL.Controller
             return true;
         }
 
-        //public static List<string> ShowProductsOfCart(Cart cart, bool toBeWrite)
-        //{
-        //    if (cart != null && cart.Sells != null)
-        //    {
-        //        var sortProducts = new List<string>();
+        public static List<string> ShowProductsInCart(Cart cart, DoO_CRMContext context, bool toBeWrite = false)
+        {
+            if (cart != null && cart.Sells != null)
+            {
+                var data = new List<string>();
 
-        //        foreach (var product in cart.Products)
-        //        {
-        //            int count = cart.Products.Count(prod => prod.Equals(product));
-        //            string stringWithData = $"{product.Name}, количество - {count} шт.";
+                foreach (var sell in cart.Sells)
+                {
+                    var product = context.Products.FirstOrDefault(prod => prod.Id == sell.ProductId);
 
-        //            if (sortProducts.Any(strig => strig.Equals(stringWithData)))
-        //            {
-        //                cart.Products.RemoveAll(strig => strig.Equals(stringWithData));
-        //            }
-        //            else
-        //            {
-        //                sortProducts.Add(stringWithData);
-        //            }
-        //        }
-        //        if (toBeWrite)
-        //        {
-        //            foreach (var str in sortProducts)
-        //            {
-        //                Console.WriteLine(str);
-        //            }
-        //        }
-        //        return sortProducts;
-        //    }
-        //    return null;
-        //}
+                    if (product != default)
+                    {
+                        data.Add($"{product.Name}, стоимость: {product.Cost}");
+                    }
+                }
+                if (toBeWrite)
+                {
+                    foreach (var str in data)
+                    {
+                        Console.WriteLine(str);
+                    }
+                }
+                return data;
+            }
+            return null;
+        }
     }
 }

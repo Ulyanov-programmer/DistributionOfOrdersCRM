@@ -5,7 +5,7 @@ namespace DoO_CRM.BL.Model
 {
     public class Sell
     {
-        public Sell(Product product, int productId, int countOfProduct, int clientId)
+        public Sell(Product product, int productId, int countOfProduct, int? clientId)
         {
             Product = product;
             ProductId = productId;
