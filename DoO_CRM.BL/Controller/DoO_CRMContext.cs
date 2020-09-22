@@ -1,16 +1,14 @@
 ﻿using DoO_CRM.BL.Model;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DoO_CRM.BL.Controller
 {
-    class DoO_CRMContext : DbContext
+    public class DoO_CRMContext : DbContext
     {
         public DoO_CRMContext()
         {
-            Database.EnsureCreated();
+            Database.Migrate();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

@@ -4,14 +4,16 @@ using DoO_CRM.BL.Controller;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DoO_CRM.BL.Migrations
 {
     [DbContext(typeof(DoO_CRMContext))]
-    partial class DoO_CRMContextModelSnapshot : ModelSnapshot
+    [Migration("20200916070024_AddSellForeginKeyToClientId")]
+    partial class AddSellForeignKeyToClientId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,13 +41,10 @@ namespace DoO_CRM.BL.Migrations
 
             modelBuilder.Entity("DoO_CRM.BL.Model.Order", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<int>("OrderId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<byte>("CassId")
-                        .HasColumnType("tinyint");
 
                     b.Property<int?>("ClientId")
                         .HasColumnType("int");
@@ -53,13 +52,19 @@ namespace DoO_CRM.BL.Migrations
                     b.Property<DateTime>("DateBuy")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsBuy")
+                        .HasColumnType("bit");
+
                     b.Property<Guid>("Number")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("SumCost")
                         .HasColumnType("decimal(18,2)");
 
-                    b.HasKey("Id");
+                    b.Property<int>("TerminalId")
+                        .HasColumnType("int");
+
+                    b.HasKey("OrderId");
 
                     b.HasIndex("ClientId");
 
@@ -68,18 +73,26 @@ namespace DoO_CRM.BL.Migrations
 
             modelBuilder.Entity("DoO_CRM.BL.Model.Sell", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("SellId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<long?>("OrderId")
-                        .HasColumnType("bigint");
+                    b.Property<int?>("ClientId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CountOfProduct")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("int");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("SellId");
+
+                    b.HasIndex("ClientId");
 
                     b.HasIndex("OrderId");
 
@@ -118,6 +131,10 @@ namespace DoO_CRM.BL.Migrations
 
             modelBuilder.Entity("DoO_CRM.BL.Model.Sell", b =>
                 {
+                    b.HasOne("DoO_CRM.BL.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId");
+
                     b.HasOne("DoO_CRM.BL.Model.Order", "Order")
                         .WithMany("Sells")
                         .HasForeignKey("OrderId");

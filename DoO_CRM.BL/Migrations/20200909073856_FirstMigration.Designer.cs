@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DoO_CRM.BL.Migrations
 {
     [DbContext(typeof(DoO_CRMContext))]
-    [Migration("20200826112508_StartUpdate")]
-    partial class StartUpdate
+    [Migration("20200909073856_FirstMigration")]
+    partial class FirstMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -41,13 +41,10 @@ namespace DoO_CRM.BL.Migrations
 
             modelBuilder.Entity("DoO_CRM.BL.Model.Order", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<int>("OrderId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<byte>("CassId")
-                        .HasColumnType("tinyint");
 
                     b.Property<int?>("ClientId")
                         .HasColumnType("int");
@@ -55,13 +52,19 @@ namespace DoO_CRM.BL.Migrations
                     b.Property<DateTime>("DateBuy")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsBuy")
+                        .HasColumnType("bit");
+
                     b.Property<Guid>("Number")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("SumCost")
                         .HasColumnType("decimal(18,2)");
 
-                    b.HasKey("Id");
+                    b.Property<int>("TerminalId")
+                        .HasColumnType("int");
+
+                    b.HasKey("OrderId");
 
                     b.HasIndex("ClientId");
 
@@ -70,18 +73,21 @@ namespace DoO_CRM.BL.Migrations
 
             modelBuilder.Entity("DoO_CRM.BL.Model.Sell", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("SellId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<long?>("OrderId")
-                        .HasColumnType("bigint");
+                    b.Property<int>("CountOfProduct")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("int");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("SellId");
 
                     b.HasIndex("OrderId");
 
