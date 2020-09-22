@@ -29,7 +29,7 @@ namespace DoO_CRM.BLTests.Model
 
             Order actualOrder = new Order(client, cart);
 
-            Order expectedOrder = new Order(terminal.TerminalId,
+            Order expectedOrder = new Order(terminal,
                                             actualOrder.Number,
                                             DateTime.Now,
                                             ClientController.GetSumCostOfSells(cart),
