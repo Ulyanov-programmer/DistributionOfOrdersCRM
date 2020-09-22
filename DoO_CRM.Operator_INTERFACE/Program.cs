@@ -46,11 +46,11 @@ namespace DoO_CRM.INTERFACE
                 while (true)
                 {
                     _ = terminal.WaitingOfOrderAsync(server, terminal);
-                    if (terminal.ActualLenghtOfQueue > 0)
+                    if (terminal.QueueOrders.Count > 0)
                     {
-                        Console.WriteLine($"На текущий момент в очереди {terminal.ActualLenghtOfQueue} заказов.");
+                        Console.WriteLine($"На текущий момент в очереди {terminal.QueueOrders.Count} заказов.");
 
-                        Console.WriteLine("\n Вы подтвердите первый заказ? Y - подтверждение, N - отказ.");
+                        Console.WriteLine("\n Вы подтвердите к покупке первый заказ? Y - подтверждение, N - отказ.");
                         string outputMessage = "";
 
                         switch (Console.ReadKey().Key)

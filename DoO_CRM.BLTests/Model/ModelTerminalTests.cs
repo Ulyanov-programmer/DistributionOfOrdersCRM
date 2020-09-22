@@ -16,8 +16,7 @@ namespace DoO_CRM.BLTests.Model
         {
             //Arrange
             var context = new DoO_CRMContext();
-            var terminal = new Terminal
-            { TerminalId = 1 };
+            var terminal = new Terminal(1);
 
             /*
                 В следствии специфики работы внешних ключей, 

@@ -75,7 +75,7 @@ namespace DoO_CRM.ClientINTERFACE
 
             Thread.Sleep(6000);
 
-            List<Product> productsFromDB = ProductController.GetTop10Products(false, context);
+            List<Product> productsFromDB = ProductController.GetTop10Products(context);
             bool listIsNotNull = productsFromDB.Count > 0;
 
             while (true)
